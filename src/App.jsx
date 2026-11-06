@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 export default function App() {
-  const [tab, setTab] = useState('request'); // 'request' | 'helper' | 'history'
+  const [role, setRole] = useState('senior'); // 'senior' (어르신) | 'helper' (도우미)
   const [inSession, setInSession] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(600); // 10분
-  const [category, setCategory] = useState('smart');
-  const [detail, setDetail] = useState('');
-  const [micOn, setMicOn] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(600); // 10분 = 600초
+  const [selectedCat, setSelectedCat] = useState('phone');
+  const [voiceText, setVoiceText] = useState('');
+  const [isListening, setIsListening] = useState(false);
 
-  // 10분 타이머
+  // 10분 카운트다운 타이머
   useEffect(() => {
     let timer;
     if (inSession && timeLeft > 0) {
@@ -27,211 +27,286 @@ export default function App() {
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
+  // 음성 인식 시뮬레이션
+  const handleVoiceInput = () => {
+    if (isListening) {
+      setIsListening(false);
+    } else {
+      setIsListening(true);
+      setVoiceText('음성을 듣고 있습니다... 편하게 말씀하세요.');
+      setTimeout(() => {
+        setVoiceText('“글자가 너무 작아서 크게 키우는 법을 알고 싶어요”');
+        setIsListening(false);
+      }, 2000);
+    }
+  };
+
   const categories = [
-    { id: 'smart', icon: '📱', title: '스마트폰 기본 설정', desc: '글씨 크기, 소리/진동, 화면 꺼짐 시간' },
-    { id: 'bank', icon: '💳', title: '은행 / 간편 송금', desc: '계좌이체, 카카오페이, 공인인증서' },
-    { id: 'ticket', icon: '🚄', title: '기차표 / 버스 예매', desc: 'KTX 코레일, 시외버스, 병원 예약' },
-    { id: 'kiosk', icon: '🍔', title: '키오스크 주문하기', desc: '패스트푸드, 무인 계산대 이용법' },
-    { id: 'talk', icon: '💬', title: '카카오톡 사용법', desc: '사진 묶어보내기, 단톡방 알림 끄기' },
-    { id: 'etc', icon: '❓', title: '기타 디지털 질문', desc: '정부24, 주민등록등본, 앱 다운로드' },
+    { id: 'phone', icon: '📱', name: '스마트폰 글씨·소리', desc: '글자 크게, 벨소리 키우기, 화면 켜짐' },
+    { id: 'talk', icon: '💬', name: '카카오톡 이용법', desc: '사진 보내기, 단체방 소리 끄기, 친구 찾기' },
+    { id: 'bank', icon: '💳', name: '은행 송금·돈 보내기', desc: '자녀 용돈 보내기, 계좌 확인, 인증서' },
+    { id: 'train', icon: '🚄', name: '기차표·병원 예약', desc: 'KTX 코레일, 시외버스, 동네 병원 예약' },
+    { id: 'kiosk', icon: '🍔', name: '식당·가게 무인주문기', desc: '키오스크 터치 주문, 카드 결제' },
+    { id: 'etc', icon: '❓', name: '기타 모든 디지털 고민', desc: '무엇이든 친절하게 짚어드립니다' },
   ];
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#e2e8f0', padding: '16px 0' }}>
-      {/* 스마트폰 목업 프레임 */}
-      <div style={{ width: '100%', maxWidth: '420px', minHeight: '840px', backgroundColor: '#ffffff', borderRadius: '32px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#e2e8f0', padding: '12px 0' }}>
+      
+      {/* 스마트폰 규격 프레임 */}
+      <div style={{ width: '100%', maxWidth: '440px', minHeight: '880px', backgroundColor: '#f8fafc', borderRadius: '36px', boxShadow: '0 20px 40px rgba(0,0,0,0.12)', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
         
-        {/* 상단 앱 헤더 */}
-        <div style={{ padding: '24px 20px 16px', background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)', color: 'white' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+        {/* 상단 헤더 영역 */}
+        <header style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '22px 20px 18px', borderBottom: '4px solid #f59e0b' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '24px' }}>⚡</span>
-              <span style={{ fontSize: '22px', fontWeight: '800', letterSpacing: '-0.5px' }}>10분만</span>
+              <span style={{ fontSize: '26px' }}>⏱️</span>
+              <span style={{ fontSize: '24px', fontWeight: '900', letterSpacing: '-0.5px' }}>10분만</span>
             </div>
-            <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '600' }}>
-              실시간 해결사 18명 대기 중
-            </span>
+            
+            {/* 모드 전환 버튼 */}
+            {!inSession && (
+              <button
+                onClick={() => setRole(role === 'senior' ? 'helper' : 'senior')}
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.18)',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  color: 'white',
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
+              >
+                {role === 'senior' ? '청년 도우미 화면 ➔' : '어르신 큰화면 ➔'}
+              </button>
+            )}
           </div>
-          <p style={{ margin: 0, fontSize: '13px', opacity: 0.85 }}>
-            디지털이 어려울 때, 10분 동안 화면을 보며 짚어드립니다.
+          <p style={{ margin: 0, fontSize: '15px', color: '#bfdbfe', fontWeight: '600' }}>
+            {role === 'senior' ? '어려운 디지털, 10분 동안 천천히 알려드려요' : '실시간 어르신 디지털 상담 센터'}
           </p>
-        </div>
+        </header>
 
-        {/* 메인 콘텐츠 영역 */}
+        {/* 안심 보안 배너 (어르신 모드 전용) */}
+        {role === 'senior' && !inSession && (
+          <div style={{ backgroundColor: '#fef3c7', borderBottom: '1px solid #fde68a', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '22px' }}>🔒</span>
+            <div style={{ fontSize: '13px', color: '#92400e', lineHeight: 1.4 }}>
+              <strong>안심 안내:</strong> 비밀번호나 개인 금융 정보는 <strong>절대 묻지 않으니</strong> 안심하고 이용하세요.
+            </div>
+          </div>
+        )}
+
+        {/* 본문 콘텐츠 */}
         <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
+          
           {inSession ? (
-            /* 10분 통화 세션 화면 */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: '#0f172a', borderRadius: '24px', padding: '24px 20px', textAlign: 'center', color: 'white', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}>
-                <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: '600' }}>남은 상담 시간</span>
-                <div style={{ fontSize: '54px', fontWeight: '900', color: timeLeft < 120 ? '#f43f5e' : '#38bdf8', letterSpacing: '2px', margin: '4px 0' }}>
+            /* 10분 상담 진행 화면 */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              
+              {/* 대형 타이머 카드 */}
+              <div style={{ backgroundColor: '#0f172a', borderRadius: '26px', padding: '26px 20px', textAlign: 'center', color: 'white', boxShadow: '0 10px 25px rgba(15,23,42,0.2)' }}>
+                <div style={{ fontSize: '15px', color: '#94a3b8', fontWeight: '700', marginBottom: '6px' }}>남은 상담 시간</div>
+                <div style={{ fontSize: '60px', fontWeight: '900', color: timeLeft < 120 ? '#ef4444' : '#38bdf8', letterSpacing: '2px', lineHeight: 1 }}>
                   {formatTime(timeLeft)}
                 </div>
-                <div style={{ height: '6px', backgroundColor: '#334155', borderRadius: '3px', overflow: 'hidden', margin: '12px 20px' }}>
-                  <div style={{ height: '100%', width: `${(timeLeft / 600) * 100}%`, backgroundColor: timeLeft < 120 ? '#f43f5e' : '#38bdf8', transition: 'width 1s linear' }} />
+                
+                {/* 진행 바 */}
+                <div style={{ height: '8px', backgroundColor: '#334155', borderRadius: '4px', overflow: 'hidden', margin: '18px 24px 14px' }}>
+                  <div style={{ height: '100%', width: `${(timeLeft / 600) * 100}%`, backgroundColor: timeLeft < 120 ? '#ef4444' : '#38bdf8', transition: 'width 1s linear' }} />
                 </div>
-                <p style={{ margin: 0, fontSize: '14px', color: '#cbd5e1' }}>
-                  👨‍🏫 <strong>김민우 서포터즈</strong> 님이 연결되었습니다
+                
+                <div style={{ fontSize: '16px', color: '#e2e8f0', fontWeight: '700' }}>
+                  👨‍🏫 친절한 도우미 <span style={{ color: '#fbbf24' }}>박준혁 청년</span>과 연결됨
+                </div>
+              </div>
+
+              {/* 실시간 화면 공유 안내 박스 */}
+              <div style={{ backgroundColor: '#ffffff', borderRadius: '24px', padding: '24px', border: '3px solid #cbd5e1', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '220px' }}>
+                <div style={{ width: '68px', height: '68px', borderRadius: '34px', backgroundColor: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '34px', marginBottom: '12px' }}>
+                  👆
+                </div>
+                <div style={{ fontSize: '19px', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
+                  화면을 보며 빨간 펜으로 짚어드려요
+                </div>
+                <div style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.4 }}>
+                  "어르신, 화면 가운데 노란색 버튼을 한번 눌러보세요."
+                </div>
+                <div style={{ marginTop: '14px', backgroundColor: '#dcfce7', color: '#166534', padding: '6px 14px', borderRadius: '14px', fontSize: '13px', fontWeight: '800' }}>
+                  ● 음성 통화 및 화면 공유 작동 중
+                </div>
+              </div>
+
+              {/* 해결 완료 버튼 */}
+              <button
+                onClick={() => {
+                  alert('상담이 완료되었습니다! 언제든 또 찾아주세요.');
+                  setInSession(false);
+                  setTimeLeft(600);
+                  setVoiceText('');
+                }}
+                style={{
+                  width: '100%',
+                  padding: '20px',
+                  backgroundColor: '#059669',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '20px',
+                  fontSize: '22px',
+                  fontWeight: '900',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 20px rgba(5,150,105,0.3)'
+                }}
+              >
+                ✅ 문제 해결 끝! (상담 종료)
+              </button>
+            </div>
+          ) : role === 'senior' ? (
+            /* 어르신 전용 도움 신청 화면 */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+              
+              {/* 안내 문구 */}
+              <div>
+                <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#0f172a', margin: '0 0 6px' }}>
+                  어떤 게 잘 안 되시나요?
+                </h2>
+                <p style={{ margin: 0, fontSize: '16px', color: '#475569' }}>
+                  아래에서 가장 비슷한 것을 하나 눌러주세요.
                 </p>
               </div>
 
-              {/* 가상 화면공유 뷰 */}
-              <div style={{ backgroundColor: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '24px', padding: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '220px' }}>
-                <div style={{ width: '60px', height: '60px', borderRadius: '30px', backgroundColor: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', marginBottom: '12px' }}>
-                  📲
-                </div>
-                <h4 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: '700', color: '#1e293b' }}>스마트폰 화면 공유 중</h4>
-                <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>도우미가 화면에 빨간색 펜으로 위치를 짚어줍니다</p>
-                <div style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#fee2e2', color: '#dc2626', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '700' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '4px', backgroundColor: '#dc2626' }}></span>
-                  실시간 화면 전송 중
-                </div>
-              </div>
-
-              {/* 컨트롤 버튼 */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <button
-                  onClick={() => setMicOn(!micOn)}
-                  style={{ padding: '14px', borderRadius: '16px', border: '1px solid #cbd5e1', backgroundColor: micOn ? '#f1f5f9' : '#fee2e2', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}
-                >
-                  {micOn ? '🎙️ 마이크 켜짐' : '🔇 마이크 꺼짐'}
-                </button>
-                <button
-                  onClick={() => {
-                    alert('문제가 깔끔하게 해결되었습니다! 상담을 종료합니다.');
-                    setInSession(false);
-                    setTimeLeft(600);
-                  }}
-                  style={{ padding: '14px', borderRadius: '16px', border: 'none', backgroundColor: '#10b981', color: 'white', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}
-                >
-                  ✨ 해결 완료 (종료)
-                </button>
-              </div>
-            </div>
-          ) : tab === 'request' ? (
-            /* 도움 요청 화면 */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div style={{ backgroundColor: '#eff6ff', borderRadius: '20px', padding: '18px 20px', border: '1px solid #bfdbfe' }}>
-                <div style={{ fontSize: '16px', fontWeight: '800', color: '#1d4ed8', marginBottom: '4px' }}>어떤 작업이 막히셨나요?</div>
-                <div style={{ fontSize: '13px', color: '#3b82f6' }}>가장 가까운 질문을 누르시면 전문 도우미와 즉시 연결됩니다.</div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '10px' }}>카테고리 선택</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {categories.map((c) => (
-                    <div
+              {/* 큼직한 카테고리 카드 목록 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {categories.map((c) => {
+                  const isSelected = selectedCat === c.id;
+                  return (
+                    <button
                       key={c.id}
-                      onClick={() => setCategory(c.id)}
+                      onClick={() => setSelectedCat(c.id)}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '14px',
-                        padding: '14px 16px',
-                        borderRadius: '16px',
-                        border: category === c.id ? '2px solid #2563eb' : '1px solid #e2e8f0',
-                        backgroundColor: category === c.id ? '#f0fdf4' : '#ffffff',
+                        gap: '16px',
+                        padding: '18px 20px',
+                        borderRadius: '22px',
+                        border: isSelected ? '3px solid #1e40af' : '2px solid #e2e8f0',
+                        backgroundColor: isSelected ? '#eff6ff' : '#ffffff',
+                        textAlign: 'left',
                         cursor: 'pointer',
-                        transition: 'all 0.15s ease'
+                        transition: 'all 0.15s ease',
+                        boxShadow: isSelected ? '0 6px 14px rgba(30,64,175,0.15)' : '0 2px 4px rgba(0,0,0,0.03)'
                       }}
                     >
-                      <span style={{ fontSize: '26px' }}>{c.icon}</span>
+                      <span style={{ fontSize: '36px', minWidth: '44px', textAlign: 'center' }}>{c.icon}</span>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: '700', fontSize: '15px', color: '#1e293b' }}>{c.title}</div>
-                        <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>{c.desc}</div>
+                        <div style={{ fontSize: '19px', fontWeight: '900', color: isSelected ? '#1e40af' : '#1e293b' }}>
+                          {c.name}
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#64748b', marginTop: '3px' }}>
+                          {c.desc}
+                        </div>
                       </div>
-                      <span style={{ color: category === c.id ? '#2563eb' : '#cbd5e1', fontWeight: 'bold' }}>✓</span>
-                    </div>
-                  ))}
+                      <span style={{ fontSize: '22px', color: isSelected ? '#1e40af' : '#cbd5e1', fontWeight: '900' }}>
+                        {isSelected ? '●' : '○'}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 말로 편하게 설명하기 (음성 버튼) */}
+              <div style={{ backgroundColor: '#ffffff', borderRadius: '22px', padding: '18px', border: '2px solid #e2e8f0' }}>
+                <div style={{ fontSize: '16px', fontWeight: '800', color: '#1e293b', marginBottom: '8px' }}>
+                  글쓰기가 힘드시면 말로 말씀하세요
                 </div>
+                
+                <button
+                  onClick={handleVoiceInput}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    backgroundColor: isListening ? '#ef4444' : '#f1f5f9',
+                    color: isListening ? 'white' : '#1e293b',
+                    border: '2px dashed ' + (isListening ? '#dc2626' : '#94a3b8'),
+                    borderRadius: '16px',
+                    fontSize: '16px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '22px' }}>{isListening ? '⏹️' : '🎙️'}</span>
+                  <span>{isListening ? '듣고 있는 중입니다... (터치하면 중지)' : '눌러서 말로 질문하기'}</span>
+                </button>
+
+                {voiceText && (
+                  <div style={{ marginTop: '12px', padding: '12px', backgroundColor: '#fef3c7', borderRadius: '12px', fontSize: '15px', color: '#92400e', fontWeight: '700' }}>
+                    {voiceText}
+                  </div>
+                )}
               </div>
 
-              <div>
-                <div style={{ fontSize: '14px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>추가 설명 (선택)</div>
-                <textarea
-                  rows="2"
-                  placeholder="예: 글씨를 제일 크게 바꾸고 싶은데 어디 있는지 모르겠어요."
-                  value={detail}
-                  onChange={(e) => setDetail(e.target.value)}
-                  style={{ width: '100%', padding: '12px 14px', borderRadius: '14px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none', resize: 'none' }}
-                />
-              </div>
-
+              {/* 10분 도움 요청 대형 버튼 */}
               <button
                 onClick={() => setInSession(true)}
                 style={{
                   width: '100%',
-                  padding: '18px',
-                  backgroundColor: '#2563eb',
+                  padding: '22px',
+                  backgroundColor: '#1e40af',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '18px',
-                  fontSize: '18px',
-                  fontWeight: '800',
+                  borderRadius: '24px',
+                  fontSize: '22px',
+                  fontWeight: '900',
                   cursor: 'pointer',
-                  boxShadow: '0 10px 20px -5px rgba(37,99,235,0.4)',
+                  boxShadow: '0 12px 28px rgba(30,64,175,0.35)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px'
+                  gap: '12px'
                 }}
               >
-                <span>⚡</span>
-                <span>지금 10분 도움 요청하기</span>
+                <span style={{ fontSize: '26px' }}>⚡</span>
+                <span>지금 10분 도우미 연결하기</span>
               </button>
             </div>
           ) : (
-            /* 도우미 목록 화면 */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            /* 청년 도우미(해결사) 관제 화면 */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: '800', fontSize: '16px' }}>도움 요청 피드</span>
-                <span style={{ fontSize: '12px', color: '#10b981', fontWeight: '700' }}>● 실시간 갱신 중</span>
+                <span style={{ fontSize: '18px', fontWeight: '900' }}>실시간 어르신 요청 대기열</span>
+                <span style={{ fontSize: '13px', color: '#059669', fontWeight: '800' }}>● 3명 대기 중</span>
               </div>
+
               {[
-                { name: '이*순 (73세)', topic: '스마트폰 글씨 키우기', time: '방금 전', reward: '3,000원' },
-                { name: '박*철 (68세)', topic: 'KTX 기차표 예매 결제 오류', time: '2분 전', reward: '3,000원' },
-                { name: '최*숙 (64세)', topic: '병원 예약 문자 링크 열기', time: '5분 전', reward: '3,000원' },
+                { name: '이옥순 어르신 (74세)', topic: '스마트폰 글씨 키우기', time: '방금 전', note: '손주 사진 볼 때 글씨가 너무 작다고 하심' },
+                { name: '박영철 어르신 (69세)', topic: 'KTX 기차표 예매 결제', time: '1분 전', note: '카드 비밀번호 누르는 화면에서 멈춤' },
+                { name: '정해숙 어르신 (66세)', topic: '카톡 사진 묶어보내기', time: '4분 전', note: '동창회 사진 10장 한 번에 보내고 싶어하심' },
               ].map((item, idx) => (
-                <div key={idx} style={{ padding: '16px', borderRadius: '18px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', boxShadow: '0 2px 4px rgba(0,0,0,0.03)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: '700', fontSize: '15px' }}>{item.name}</span>
-                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>{item.time}</span>
+                <div key={idx} style={{ backgroundColor: '#ffffff', borderRadius: '20px', padding: '18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '17px', fontWeight: '800', color: '#0f172a' }}>{item.name}</span>
+                    <span style={{ fontSize: '13px', color: '#94a3b8' }}>{item.time}</span>
                   </div>
-                  <div style={{ fontSize: '14px', color: '#334155', marginBottom: '12px' }}>{item.topic}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: '#2563eb' }}>사례금: {item.reward}</span>
-                    <button
-                      onClick={() => setInSession(true)}
-                      style={{ padding: '8px 16px', backgroundColor: '#0f172a', color: 'white', border: 'none', borderRadius: '12px', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}
-                    >
-                      상담 수락 ➔
-                    </button>
+                  <div style={{ display: 'inline-block', backgroundColor: '#eff6ff', color: '#1e40af', padding: '4px 10px', borderRadius: '8px', fontSize: '13px', fontWeight: '800', marginBottom: '8px' }}>
+                    {item.topic}
                   </div>
+                  <p style={{ margin: '0 0 14px', fontSize: '14px', color: '#475569', lineHeight: 1.4 }}>{item.note}</p>
+                  <button
+                    onClick={() => setInSession(true)}
+                    style={{ width: '100%', padding: '14px', backgroundColor: '#0f172a', color: 'white', border: 'none', borderRadius: '14px', fontSize: '15px', fontWeight: '800', cursor: 'pointer' }}
+                  >
+                    10분 화면 연결하기 ➔
+                  </button>
                 </div>
               ))}
             </div>
           )}
         </div>
-
-        {/* 하단 내비게이션 바 */}
-        {!inSession && (
-          <div style={{ display: 'flex', borderTop: '1px solid #f1f5f9', padding: '12px 20px', backgroundColor: '#ffffff', justifyContent: 'space-around' }}>
-            <button
-              onClick={() => setTab('request')}
-              style={{ border: 'none', background: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: tab === 'request' ? '#2563eb' : '#94a3b8', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}
-            >
-              <span style={{ fontSize: '20px' }}>🙋‍♂️</span>
-              도움 받기
-            </button>
-            <button
-              onClick={() => setTab('helper')}
-              style={{ border: 'none', background: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', color: tab === 'helper' ? '#2563eb' : '#94a3b8', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}
-            >
-              <span style={{ fontSize: '20px' }}>👨‍🏫</span>
-              도와주기
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
