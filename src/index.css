@@ -1,2 +1,12 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif; }
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Noto Sans KR', sans-serif; color: #362b35; background: #eee9e6; }
+h1, h2, h3, button, input, legend, summary { font-family: 'Pretendard', 'Noto Sans KR', sans-serif; }
+button, input, textarea { font-size: inherit; }
+button { color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button:disabled { cursor: default; }
+button, p, h1, h2, h3, figure { margin: 0; }
+h1:focus { outline: none; }
+a { color: #75435c; }
+::selection { background: #f0d4dc; }
